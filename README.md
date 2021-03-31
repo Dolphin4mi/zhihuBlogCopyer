@@ -6,4 +6,5 @@ translate the zhihu's blog equations to tex
 
 使用方法：
 
-python zhihuBlogCopyer.py *.md
+1. 先使用复制粘贴的方式将知乎上的blog粘贴到pypora中保存。
+2. 运行此工具python zhihuBlogCopyer.py *.md
