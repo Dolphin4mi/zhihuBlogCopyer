@@ -4,15 +4,21 @@
 # 	1. copy all the content of the blog to a text file '.txt' or '.md'
 # 	2. run this code with the filename = 'filename.txt' or 'filename.md'
 # 	3. modify some backslash error
-filename = '2.md'
+
+import sys
+
+# filename = '1.md'
+filename = sys.argv[1]
+print('正在处理....')
+
 f = open(filename, 'r+', encoding="utf-8")
 
 lines = f.readlines()
 f.close()
 
 for lineloc in range(len(lines)):
-	print("hang:", lineloc)
-	print(lines[lineloc])
+	#print("hang:", lineloc)
+	#print(lines[lineloc])
 
 	line = str(lines[lineloc])
 
@@ -34,8 +40,8 @@ for lineloc in range(len(lines)):
 
 		line = "".join(line)
 		line = line.replace('+',' ')
-		key = ['%20','%22','%23','%25','%26','%28','%29','%2A','%2B','%2C','%2F','%3A','%3B','%3C','%3D','%3E','%3F','%40','%5B','%5C','%5D','%7C','%5E','%7B','%7C','%7D']
-		value = [' ','"','#','%','&','(',')','*','+',',','/',':',';','<','=','>','?','@','[','\\',']','|','^','{','|','}']
+		key = ['%20','%22','%23','%25','%26','%27','%28','%29','%2A','%2B','%2C','%2F','%3A','%3B','%3C','%3D','%3E','%3F','%40','%5B','%5C','%5D','%7C','%5E','%7B','%7C','%7D']
+		value = [' ','"','#','%','&',"'",'(',')','*','+',',','/',':',';','<','=','>','?','@','[','\\',']','|','^','{','|','}']
 		for i in range(len(key)):
 			while (key[i] in line[stratkuohaoLoc:endkouhaoLoc]):
 				line = line[:stratkuohaoLoc] + line[stratkuohaoLoc:endkouhaoLoc].replace(key[i], value[i], 1) + line[endkouhaoLoc:]
@@ -48,19 +54,19 @@ for lineloc in range(len(lines)):
 	lines[lineloc] = line
 
 for lineloc in range(len(lines)):
-	print("hang:", lineloc)
+	print("handling the ", lineloc, 'th row')
 	if lineloc==142:
 		print(1)
-	print(lines[lineloc])
+	#print(lines[lineloc])
 	if lineloc!=0:
 		oldline = line
 	line = str(lines[lineloc])
-	if lineloc!=0 and oldline=='\n' and line[0]=='$' and line[len(line)-2]=='$':
+	if lineloc!=0 and oldline[len(oldline)-1]=='\n' and line[0]=='$' and line[len(line)-2]=='$':
 		line = line.replace('$',"\n$$\n")
 	lines[lineloc] = line
 
-print(lines)
+# print(lines)
 f = open(filename, 'w', encoding="utf-8")
 f.writelines(lines)
 f.close()
-
+print('处理完成，没有出错哦0.0')
