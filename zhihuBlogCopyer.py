@@ -6,6 +6,7 @@
 # 	3. modify some backslash error
 
 import sys
+from urllib.parse import unquote
 
 # filename = '1.md'
 filename = sys.argv[1]
@@ -16,20 +17,25 @@ f = open(filename, 'r+', encoding="utf-8")
 lines = f.readlines()
 f.close()
 
+# 构造字典，用来解码url
+key = []
+for i in range(16 * 16):
+	key.append("%" + str(hex(i))[2:4].rjust(2, '0').upper())
+	print(key[i])
+
+# 处理每一行
 for lineloc in range(len(lines)):
-	#print("hang:", lineloc)
-	#print(lines[lineloc])
 
 	line = str(lines[lineloc])
 
 	while "![[公式]]" in line:
-		stratkuohaoLoc = line.find("![[公式]]")
+		startkuohaoLoc = line.find("![[公式]]")
 		line = line.replace("![[公式]](https://www.zhihu.com/equation?tex=", "$",1)
 
+		# 匹配括号
 		countkuohao = 1
-		endkouhaoLoc = stratkuohaoLoc
+		endkouhaoLoc = startkuohaoLoc
 		while (countkuohao != 0):
-			# print("buwei0")
 			if line[endkouhaoLoc] == ")":  # 如果是右括号，则记数减1
 				countkuohao -= 1
 			if line[endkouhaoLoc] == "(":
@@ -40,24 +46,23 @@ for lineloc in range(len(lines)):
 
 		line = "".join(line)
 		line = line.replace('+',' ')
-		key = ['%20','%22','%23','%25','%26','%27','%28','%29','%2A','%2B','%2C','%2F','%3A','%3B','%3C','%3D','%3E','%3F','%40','%5B','%5C','%5D','%7C','%5E','%7B','%7C','%7D']
-		value = [' ','"','#','%','&',"'",'(',')','*','+',',','/',':',';','<','=','>','?','@','[','\\',']','|','^','{','|','}']
+
 		for i in range(len(key)):
-			while (key[i] in line[stratkuohaoLoc:endkouhaoLoc]):
-				line = line[:stratkuohaoLoc] + line[stratkuohaoLoc:endkouhaoLoc].replace(key[i], value[i], 1) + line[endkouhaoLoc:]
-				endkouhaoLoc -= 2
-				if i==17:
-					endkouhaoLoc += 1
+			while (key[i] in line[startkuohaoLoc:endkouhaoLoc]):
+				shorttxt = line[startkuohaoLoc:endkouhaoLoc]
+				shorttex = unquote(shorttxt) # 解码
+				len_decreased = len(shorttxt)- len(shorttex)
+				# line = line[:startkuohaoLoc] + line[startkuohaoLoc:endkouhaoLoc].replace(key[i], value[i], 1) + line[endkouhaoLoc:]
+				line = line[:startkuohaoLoc] + shorttex + line[endkouhaoLoc:]
+				endkouhaoLoc -= len_decreased
+
 	while('$ ' in line):
 		startLoc = line.find('$ ')
 		line = line[:startLoc] + '$' + line[startLoc+2:]
 	lines[lineloc] = line
 
+# 调整整体结构
 for lineloc in range(len(lines)):
-	print("handling the ", lineloc, 'th row')
-	if lineloc==142:
-		print(1)
-	#print(lines[lineloc])
 	if lineloc!=0:
 		oldline = line
 	line = str(lines[lineloc])
@@ -65,7 +70,7 @@ for lineloc in range(len(lines)):
 		line = line.replace('$',"\n$$\n")
 	lines[lineloc] = line
 
-# print(lines)
+# 写文件
 f = open(filename, 'w', encoding="utf-8")
 f.writelines(lines)
 f.close()
