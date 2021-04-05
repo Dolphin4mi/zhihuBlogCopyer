@@ -12,8 +12,9 @@ import urllib
 import urllib.request
 from urllib.parse import unquote
 
+
 def read_md_file(md_name):
-    print('正在读入', sys.argv[1], '....')
+    print('正在读入', md_name, '....')
     f = open(md_name, 'r+', encoding="utf-8")
     lines = f.readlines()
     f.close()
@@ -72,8 +73,10 @@ def construct_equation(lines):
         if lineloc != 0:
             oldline = line
         line = str(lines[lineloc])
+        # 当这一行是一个段内公式时，则调整为$$\n...\n$$
         if lineloc != 0 and oldline[len(oldline) - 1] == '\n' and line[0] == '$' and line[len(line) - 2] == '$':
-            line = line.replace('$', "\n$$\n")
+            line = '$$\n' + line[1:-2] + '\n$$'
+            # line = line.replace('$', "$$")
         lines[lineloc] = line
     return lines
 
@@ -89,14 +92,13 @@ def requestImg(url, workpath):
 
 
 # 下载图片的函数
-def download_img(lines):
-
+def download_img(md_name, lines):
     # 匹配图片url
     print('正在下载图片....')
     reg = r'\(https://pic.*?\.(jpg|png|gif|jpeg|bmp)+.*?\)'  # 其中的问号是最短匹配，适用于每行存在多个url图片
-    #reg = re.compile(r'\(https://.*?\.(jpg|png|gif|jpeg|bmp)+.*?\)')  # 其中的问号是最短匹配，适用于每行存在多个url图片
+    # reg = re.compile(r'\(https://.*?\.(jpg|png|gif|jpeg|bmp)+.*?\)')  # 其中的问号是最短匹配，适用于每行存在多个url图片
     # 保存文件夹
-    savepath = sys.argv[1][:-3] + '.assets'
+    savepath = md_name[:-3] + '.assets'
     if not os.path.exists(savepath):
         os.makedirs(savepath)
     # 下载图片
@@ -129,11 +131,11 @@ def write_md_file(filename, lines):
         time.sleep(3)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     global error_global
     error_global = 0
     md_name = sys.argv[1]
     lines = read_md_file(md_name)
     lines = construct_equation(lines)
-    lines = download_img(lines)
+    lines = download_img(md_name, lines)
     write_md_file(md_name, lines)
