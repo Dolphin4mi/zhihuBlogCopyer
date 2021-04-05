@@ -13,3 +13,5 @@ translate the zhihu's blog equations to tex
   格式为：每行处理一个文件
   python zhihuBlogCopyer.py *.md
   
+ATTENTION:
+不用多次对同一个md文件进行处理，会造成公式排版错误
