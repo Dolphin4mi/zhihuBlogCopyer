@@ -75,7 +75,7 @@ def construct_equation(lines):
         line = str(lines[lineloc])
         # 当这一行是一个段内公式时，则调整为$$\n...\n$$
         if lineloc != 0 and oldline[len(oldline) - 1] == '\n' and line[0] == '$' and line[len(line) - 2] == '$':
-            line = '$$\n' + line[1:-2] + '\n$$'
+            line = '$$\n' + line[1:-2] + '\n$$\n'
             # line = line.replace('$', "$$")
         lines[lineloc] = line
     return lines
